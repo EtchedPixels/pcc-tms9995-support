@@ -20,8 +20,10 @@ make -f Makefile.tms9995 install
 
 ## The Runtime
 
+````
 make
 make install
+````
 
 ## Usage
 
