@@ -652,8 +652,8 @@ int main(int argc, char *argv[])
 	char **p = argv;
 	signal(SIGCHLD, SIG_DFL);
 
-	add_macro("__CC9995__");
-	add_macro("__tms9995__");
+	append_obj(&deflist, "__CC9995__", 0);
+	append_obj(&deflist, "__tms9995__", 0);
 
 	while (*++p) {
 		/* filename or option ? */
