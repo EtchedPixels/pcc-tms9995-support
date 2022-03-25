@@ -652,6 +652,9 @@ int main(int argc, char *argv[])
 	char **p = argv;
 	signal(SIGCHLD, SIG_DFL);
 
+	add_macro("__CC9995__");
+	add_macro("__tms9995__");
+
 	while (*++p) {
 		/* filename or option ? */
 		if (**p != '-') {
