@@ -15,7 +15,9 @@ makelitb: makelitb.c
 	./makelitb
 
 # Members for the C library
-OBJ =	libc/memcpy.o
+OBJ =	libc/memcpy.o \
+	libc/memset.o \
+	libc/strlen.o
 
 # Members for the support library
 SOBJ =  support9995/add32i.o \
@@ -23,6 +25,7 @@ SOBJ =  support9995/add32i.o \
 	support9995/cret.o \
 	support9995/dec32.o \
 	support9995/div32.o \
+	support9995/fpreg.o \
 	support9995/inc32.o \
 	support9995/ls32.o \
 	support9995/mul32.o \
