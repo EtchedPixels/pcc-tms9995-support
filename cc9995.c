@@ -401,6 +401,9 @@ void preprocess_c(char *path)
 void link_phase(void)
 {
 	build_arglist(CMD_LD);
+	/* Force word alignment of segments */
+	add_argument("-A");
+	add_argument("2");
 	switch (targetos) {
 		case OS_FUZIX:
 			switch(fuzixsub) {
