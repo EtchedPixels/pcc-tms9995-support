@@ -25,6 +25,7 @@ SOBJ =  support9995/add32i.o \
 	support9995/cret.o \
 	support9995/dec32.o \
 	support9995/div32.o \
+	support9995/divs.o \
 	support9995/fpreg.o \
 	support9995/inc32.o \
 	support9995/ls32.o \
