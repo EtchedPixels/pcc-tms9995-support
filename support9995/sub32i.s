@@ -10,5 +10,5 @@ sub32i:
 		jnc	@sub32i_1
 		dec	r0
 sub32i_1:	inct	r11
-		s	*r11,r0
+		s	*r11+,r0
 		rt
