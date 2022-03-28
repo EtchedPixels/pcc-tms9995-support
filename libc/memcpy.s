@@ -29,8 +29,9 @@ memcpy_aligned:
 		;
 		;	Check sizing
 		;
-		srl	r2,1
-		jne	@memcpy_wb
+		mov	r2,r3
+		srl	r3,1
+		joc	@memcpy_wb
 
 ;
 ;	Case 1: 	word aligned word sized
@@ -46,7 +47,7 @@ memcpy_w1:
 ;
 memcpy_wb:
 		mov	*r1+,*r0+
-		dect	r2
+		dec	r2
 		jne	@memcpy_w1
 		movb	*r1,*r0
 		mov	*r13,r1
