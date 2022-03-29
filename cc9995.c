@@ -59,6 +59,11 @@
 #define LIBPATH	"/opt/cc9995/lib/"
 #define INCPATH "/opt/cc9995/include/"
 
+#define LIBPATH_TI	LIBPATH"target-ti994a/"
+#define INCPATH_TI	INCPATH"target-ti994a/"
+#define CRT0_TI		"crt0-ti994a.o"
+#define CMD_TICART	LIBPATH"target-ti994a/ticart"
+
 #define CMD_AS		BINPATH"as9995"
 #define CMD_CC		LIBPATH"tms9995-cpp"
 #define CMD_CCOM	LIBPATH"tms9995-ccom"
@@ -102,8 +107,10 @@ int standalone;
 int cpu = 9995;
 int mapfile;
 int targetos;
+int discardable;
 #define OS_NONE		0
 #define OS_FUZIX	1
+#define OS_TI994A	2
 int fuzixsub;
 
 #define MAXARG	512
@@ -151,14 +158,6 @@ static char *extend(char *p, char *e)
 	char *n = xstrdup(p, strlen(e));
 	strcat(n, e);
 	return n;
-}
-
-static off_t filesize(char *path)
-{
-	struct stat st;
-	if (stat(path, &st) < 0)
-		return -1;
-	return st.st_size;
 }
 
 static void append_obj(struct objhead *h, char *p, uint8_t type)
@@ -371,6 +370,10 @@ void convert_c_to_s(char *path)
 		add_argument("-x");
 		add_argument(*p++);
 	}
+	if (cpu == 9900)
+		add_argument("-mnodivs");
+	if (discardable)
+		add_argument("-mdiscard");
 	t = xstrdup(path, 0);
 	redirect_in(t);
 	redirect_out(pathmod(path, ".%", ".s", 2));
@@ -425,6 +428,17 @@ void link_phase(void)
 				break;
 			}
 			break;
+		case OS_TI994A:
+			/* Link at 0x6000 data 0x33536 ??? */
+			add_argument("-b");
+			add_argument("-C");
+			add_argument("24576");
+			/* with 32K RAM present might want to link for it, but
+			   it also has a hole so might want some options
+			   put bss and/or stack in one and data the other */
+			add_argument("-D");
+			add_argument("33536");
+			break;
 		case OS_NONE:
 		default:
 			add_argument("-b");
@@ -447,15 +461,31 @@ void link_phase(void)
 	if (!standalone) {
 		/* Start with crt0.o, end with libc.a and support libraries */
 		/* For now - we will want one per target */
-		add_argument(CRT0);
-		append_obj(&libpathlist, LIBPATH, 0);
-		append_obj(&liblist, LIBC, TYPE_A);
+		switch(targetos) {
+		case OS_TI994A:
+			add_argument(CRT0_TI);
+			append_obj(&libpathlist, LIBPATH_TI, 0);
+			append_obj(&liblist, LIBC, TYPE_A);
+			break;
+		case OS_FUZIX:
+		case OS_NONE:
+			add_argument(CRT0);
+			append_obj(&libpathlist, LIBPATH, 0);
+			append_obj(&liblist, LIBC, TYPE_A);
+			break;
+		}
 	}
 	append_obj(&liblist, LIB9995, TYPE_A);
 	add_argument_list(NULL, &objlist);
 	resolve_libraries();
 	run_command();
 	switch(targetos) {
+	case OS_TI994A:
+		/* TI 99/4A */
+		build_arglist(CMD_TICART);
+		add_argument(target);
+		add_argument(extend(target, ".cart"));
+		run_command();
 		break;
 	}
 }
@@ -674,6 +704,10 @@ int main(int argc, char *argv[])
 			last_phase = 3;
 			break;
 			/* Don't assemble */
+		case 'd':
+			/* Build for discard */
+			discardable = 1;
+			break;
 		case 'S':
 			uniopt(*p);
 			last_phase = 2;
@@ -724,8 +758,8 @@ int main(int argc, char *argv[])
 			break;
 		case 'm':
 			cpu = atoi(*p + 2);
-			if (cpu != 9995) {
-				fprintf(stderr, "cc: only 9995 supported.\n");
+			if (cpu != 9995 && cpu != 9900) {
+				fprintf(stderr, "cc: only 9900 and 9995 supported.\n");
 				fatal();
 			}
 			break;	
@@ -733,15 +767,16 @@ int main(int argc, char *argv[])
 			mapfile = 1;
 			break;
 		case 't':
-			if (strcmp(*p + 2, "fuzix") == 0) {
+			if (strcmp(*p + 2, "ti994a") == 0) {
+				targetos = OS_TI994A;
+				cpu = 9900;
+			} else if (strcmp(*p + 2, "fuzix") == 0) {
 				targetos = OS_FUZIX;
 				fuzixsub = 0;
-			}
-			else if (strcmp(*p + 2, "fuzixrel1") == 0) {
+			} else if (strcmp(*p + 2, "fuzixrel1") == 0) {
 				targetos = OS_FUZIX;
 				fuzixsub = 1;
-			}
-			else if (strcmp(*p + 2, "fuzixrel2") == 0) {
+			} else if (strcmp(*p + 2, "fuzixrel2") == 0) {
 				targetos = OS_FUZIX;
 				fuzixsub = 2;
 			} else {
@@ -756,6 +791,9 @@ int main(int argc, char *argv[])
 
 	if (!standalone) {
 		switch (targetos) {
+		case OS_TI994A:
+                       add_system_include(INCPATH_TI);
+			break;
 		case OS_FUZIX:
 			break;
 		}
