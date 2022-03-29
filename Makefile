@@ -6,7 +6,6 @@ install: cc9995 crt0.o libc.a lib9995.a
 	cp lib9995.a /opt/cc9995/lib
 	cp cc9995 /opt/cc9995/bin
 
-
 cc9995: cc9995.c
 	gcc -Wall -pedantic -O2 cc9995.c -o cc9995
 
@@ -22,7 +21,9 @@ OBJ =	libc/memcpy.o \
 # Members for the support library
 SOBJ =  support9995/add32i.o \
 	support9995/add32.o \
+	support9995/center.o \
 	support9995/cret.o \
+	support9995/cretv.o \
 	support9995/dec32.o \
 	support9995/div32.o \
 	support9995/divs.o \
@@ -35,7 +36,7 @@ SOBJ =  support9995/add32i.o \
 	support9995/s8_32.o \
 	support9995/sub32i.o \
 	support9995/sub32.o \
-	support9995/u32fp.o \
+	support9995/u32fp.o
 
 include literals
 
