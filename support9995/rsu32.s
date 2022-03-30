@@ -12,7 +12,7 @@ rsu32_0:
 		srl	r0,1
 		joc	@rsu32_1
 		srl	r1,1
-		jmp	@rsu32
+		jmp	@rsu32_2
 rsu32_1:	srl	r1,1
 		ai	r1,0x8000
 rsu32_2:	ci	r2,0

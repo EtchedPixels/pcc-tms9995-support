@@ -15,7 +15,7 @@ rss32_0:
 		sra	r0,1
 		joc	@rss32_1
 		srl	r1,1
-		jmp	@rss32
+		jmp	@rss32_2
 rss32_1:	srl	r1,1
 		ai	r1,0x8000
 rss32_2:	ci	r2,0
