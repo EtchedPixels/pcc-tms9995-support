@@ -17,6 +17,21 @@ div32i:
 	mov	*r11+,r2
 	mov	*r11+,r3
 div32:
+	; Look for a shortcut first are we doing 32 by 16 ?
+	ci	r2, 0
+	jne	@div32x32
+	; 32 x 16 - hardware supported
+	mov	r3, r2
+	; shuffle into expected places
+	; Remainder into r2/r3
+	mov	r1, r3
+	clr	r2
+	; Result into r0/r1
+	mov	r0, r1
+	clr	r0
+	rt
+
+div32x32:
 	dect	r13
 	mov	r4,*r13
 	dect	r13
