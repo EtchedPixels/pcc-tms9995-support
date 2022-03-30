@@ -5,23 +5,23 @@
 ;
 ;	This is complicated on a word based machine.
 ;
-;	On entry  *sp = dest, @2(sp) = source @4(sp) = length
+;	On entry  r4 = dest, r5 = source @(sp) = length
 ;
 _memcpy:
-		; r0 = dest, r1 = source, r2 = count, r3 scratch
-		mov	*r13,r0
-		mov	@2(r13),r1
-		mov	@4(r13),r2
-		xor	@2(r13),r3
+		; r4 = dest, r5 = source, r2 = count, r0, r3 scratch
+		mov	*r13,r2
+		mov	r4,r0
+		mov	r4,r1		; return code is always dest
+		xor	r5,r0
 		; check alignment between pointers
 		mov	r0,r3
 		srl	r3,1
 		joc	@not_aligned
 		; same alignment
 		; check if they are odd or even aligned
+		mov	r4,r0
 		srl	r0,1
 		joc	@byte_first
-		mov	*r13,r0
 		;
 		;	Even alignment
 		;
@@ -37,27 +37,24 @@ memcpy_aligned:
 ;	Case 1: 	word aligned word sized
 ;
 memcpy_w1:	
-		mov	*r1+,*r0+
+		mov	*r5+,*r4+
 		dect	r2
 		jne	@memcpy_w1
-		mov	*r13,r1
 		rt
 ;
 ;	Case 2:		word aligned odd sized
 ;
 memcpy_wb:
-		mov	*r1+,*r0+
-		dec	r2
-		jne	@memcpy_w1
-		movb	*r1,*r0
-		mov	*r13,r1
+		mov	*r5+,*r4+
+		dect	r2
+		jne	@memcpy_wb
+		movb	*r5,*r4
 		rt
 ;
 ;	Case 3:		both halves misaligned
 ;
 byte_first:
-		mov	*r13,r0
-		movb	*r1+,*r0+
+		movb	*r5+,*r4+
 		dec	r2
 		;
 		;	Do one byte then turns into case 1 or 2
@@ -68,8 +65,7 @@ byte_first:
 ;	but for now don't bother. It should be rare with luck
 ;
 not_aligned:
-		movb	*r1+,*r0+
+		movb	*r5+,*r4+
 		dec	r2
 		jne	@not_aligned
-		mov	*r13, r1
 		rt
