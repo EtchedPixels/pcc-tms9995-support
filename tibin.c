@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    while((l = read(ifd, buf, 8186)) > 0) {
+    while((l = read(ifd, buf + 6, 8186)) > 0) {
         left -= l;
         emit_block(pname, l, left == 0);
         addr += l;
