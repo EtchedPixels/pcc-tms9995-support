@@ -33,7 +33,6 @@ rss32:		ci	r0,0x8000
 rss32_4:
 		; 2. If the value is > 16bit shift then do a mov and a 16bit
 		; shift instead
-		mov	*r11+,r2
 		ci	r2,16
 		jlt	@rss32_2
 		ai	r2,-16
