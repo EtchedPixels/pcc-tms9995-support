@@ -53,7 +53,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#define DEBUG
+#undef DEBUG
 
 #define BINPATH	"/opt/cc9995/bin/"
 #define LIBPATH	"/opt/cc9995/lib/"
@@ -61,8 +61,8 @@
 
 #define LIBPATH_TI	LIBPATH"target-ti994a/"
 #define INCPATH_TI	INCPATH"target-ti994a/"
-#define CRT0_TI		"crt0-ti994a.o"
-#define CMD_TICART	LIBPATH"target-ti994a/ticart"
+#define CRT0_TI		LIBPATH_TI"crt0-ti994a.o"
+#define CMD_TIBIN	LIBPATH_TI"tibin"
 
 #define CMD_AS		BINPATH"as9995"
 #define CMD_CC		LIBPATH"tms9995-cpp"
@@ -153,13 +153,6 @@ static char *xstrdup(char *p, int extra)
 	return n;
 }
 
-static char *extend(char *p, char *e)
-{
-	char *n = xstrdup(p, strlen(e));
-	strcat(n, e);
-	return n;
-}
-
 static void append_obj(struct objhead *h, char *p, uint8_t type)
 {
 	struct obj *o = malloc(sizeof(struct obj));
@@ -202,13 +195,6 @@ static void add_argument(char *p)
 		fatal();
 	}
 	*argptr++ = p;
-}
-
-static void add_int_argument(int n)
-{
-	char buf[16];
-	snprintf(buf, 16, "%d", n);
-	add_argument(xstrdup(buf, 0));
 }
 
 static void add_argument_list(char *header, struct objhead *h)
@@ -311,7 +297,7 @@ static void redirect_in(const char *p)
 {
 #ifdef DEBUG
 	printf("[stdin to %s]\n", p);
-#endif	
+#endif
 	arginfd = open(p, O_RDONLY);
 	if (arginfd == -1) {
 		perror(p);
@@ -323,7 +309,7 @@ static void redirect_out(const char *p)
 {
 #ifdef DEBUG
 	printf("[stdout to %s]\n", p);
-#endif	
+#endif
 	argoutfd = open(p, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (argoutfd == -1) {
 		perror(p);
@@ -371,7 +357,7 @@ void convert_c_to_s(char *path)
 		add_argument(*p++);
 	}
 	if (cpu == 9900)
-		add_argument("-mnodivs");
+		add_argument("-mno-divs");
 	if (discardable)
 		add_argument("-mdiscard");
 	t = xstrdup(path, 0);
@@ -429,15 +415,10 @@ void link_phase(void)
 			}
 			break;
 		case OS_TI994A:
-			/* Link at 0x6000 data 0x33536 ??? */
+			/* Link at 0xA000 */
 			add_argument("-b");
 			add_argument("-C");
-			add_argument("24576");
-			/* with 32K RAM present might want to link for it, but
-			   it also has a hole so might want some options
-			   put bss and/or stack in one and data the other */
-			add_argument("-D");
-			add_argument("33536");
+			add_argument("40960");
 			break;
 		case OS_NONE:
 		default:
@@ -482,9 +463,8 @@ void link_phase(void)
 	switch(targetos) {
 	case OS_TI994A:
 		/* TI 99/4A */
-		build_arglist(CMD_TICART);
+		build_arglist(CMD_TIBIN);
 		add_argument(target);
-		add_argument(extend(target, ".cart"));
 		run_command();
 		break;
 	}
@@ -492,8 +472,10 @@ void link_phase(void)
 
 void sequence(struct obj *i)
 {
+#ifdef DEBUG
 	printf("Last Phase %d\n", last_phase);
 	printf("1:Processing %s %d\n", i->name, i->type);
+#endif
 	if (i->type == TYPE_S) {
 		convert_S_to_s(i->name);
 		i->type = TYPE_s;
@@ -506,7 +488,9 @@ void sequence(struct obj *i)
 	}
 	if (last_phase == 1)
 		return;
+#ifdef DEBUG
 	printf("2:Processing %s %d\n", i->name, i->type);
+#endif
 	if (i->type == TYPE_C_pp) {
 		convert_c_to_s(i->name);
 		i->type = TYPE_s;
@@ -514,7 +498,9 @@ void sequence(struct obj *i)
 	}
 	if (last_phase == 2)
 		return;
+#ifdef DEBUG
 	printf("3:Processing %s %d\n", i->name, i->type);
+#endif
 	if (i->type == TYPE_s) {
 		convert_s_to_o(i->name);
 		i->type = TYPE_O;
@@ -780,7 +766,7 @@ int main(int argc, char *argv[])
 				targetos = OS_FUZIX;
 				fuzixsub = 2;
 			} else {
-				fprintf(stderr, "cc: only flex, fuzix and mc10 target types are known.\n");
+				fprintf(stderr, "cc: only fuzix and ti994a target types are known.\n");
 				fatal();
 			}
 			break;

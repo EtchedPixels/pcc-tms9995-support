@@ -1,13 +1,23 @@
-all: makelitb cc9995 crt0.o libc.a lib9995.a
+all: makelitb cc9995 crt0.o crt0-ti994a.o libc.a lib9995.a tibin
 
-install: cc9995 crt0.o libc.a lib9995.a
+install: cc9995 crt0.o crt0-ti994a.o libc.a lib9995.a tibin
+	mkdir -p /opt/cc9995/lib
+	mkdir -p /opt/cc9995/bin
+	mkdir -p /opt/cc9995/include
+	mkdir -p /opt/cc9995/lib/target-ti994a
+	mkdir -p /opt/cc9995/include/target-ti994a
 	cp crt0.o /opt/cc9995/lib
+	cp crt0-ti994a.o /opt/cc9995/lib/target-ti994a
 	cp libc.a /opt/cc9995/lib
 	cp lib9995.a /opt/cc9995/lib
 	cp cc9995 /opt/cc9995/bin
+	cp tibin /opt/cc9995/lib/target-ti994a
 
 cc9995: cc9995.c
 	gcc -Wall -pedantic -O2 cc9995.c -o cc9995
+
+tibin: tibin.c
+	gcc -Wall -pedantic -O2 tibin.c -o tibin
 
 makelitb: makelitb.c
 	gcc -Wall -pedantic -O2 makelitb.c -o makelitb
