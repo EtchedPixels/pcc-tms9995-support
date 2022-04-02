@@ -28,17 +28,17 @@ rss32_3:
 rss32i:
 		mov	*r11+,r2
 rss32:		ci	r0,0x8000
-		jle	@rss32_4
+		jhe	@rss32_4
 		b	@rsu32
 rss32_4:
 		; 2. If the value is > 16bit shift then do a mov and a 16bit
 		; shift instead
 		ci	r2,16
 		jlt	@rss32_2
-		ai	r2,-16
-		jeq	@rss32_3
 		mov	r0,r1
 		mov	r2,r0
+		ai	r2,-16
+		jeq	@rss32_3
 		sra	r1,r0
 		li	r0,0xFFFF	; sign extend as know negative
 		rt
