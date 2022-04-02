@@ -1,6 +1,8 @@
-all: makelitb cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a tibin mdosbin
+all: makelitb cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a \
+     libti994a.a tibin mdosbin
 
-install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a tibin mdosbin
+install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a \
+	tibin mdosbin libti994a.a
 	mkdir -p /opt/cc9995/lib
 	mkdir -p /opt/cc9995/bin
 	mkdir -p /opt/cc9995/include
@@ -10,6 +12,7 @@ install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a tibin mdosbin
 	mkdir -p /opt/cc9995/include/target-mdos
 	cp crt0.o /opt/cc9995/lib
 	cp crt0-ti994a.o /opt/cc9995/lib/target-ti994a
+	cp libti994a.a /opt/cc9995/lib/target-ti994a
 	cp libc.a /opt/cc9995/lib
 	cp lib9995.a /opt/cc9995/lib
 	cp cc9995 /opt/cc9995/bin
@@ -54,6 +57,13 @@ SOBJ =  support9995/add32i.o \
 	support9995/sub32.o \
 	support9995/u32fp.o
 
+# Members for the TI/994A library
+
+TOBJ = 	ti994a/console.o \
+	ti994a/getch.o \
+	ti994a/getjs.o \
+	ti994a/printat.o
+
 include literals
 
 libc.a:	cc9995 $(OBJ)
@@ -62,6 +72,9 @@ libc.a:	cc9995 $(OBJ)
 lib9995.a: cc9995 $(SOBJ) $(LOBJ)
 	ar rc lib9995.a $(SOBJ) $(LOBJ)
 
+libti994a.a: cc9995 $(TOBJ)
+	ar rc libti994a.a $(TOBJ)
+
 %.o: %.s
 	as9995 $^
 
@@ -69,6 +82,7 @@ lib9995.a: cc9995 $(SOBJ) $(LOBJ)
 	cc9995 -c $^
 
 clean:
-	rm -f $(OBJ) *~ cc9995 crt0.o lib9995.a libc.a support9995/*.o libc/*.o
+	rm -f $(OBJ) *~ cc9995 crt0.o lib9995.a libc.a
+	rm -f support9995/*.o libc/*.o ti994a/*.o
 
 
