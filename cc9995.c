@@ -64,6 +64,11 @@
 #define CRT0_TI		LIBPATH_TI"crt0-ti994a.o"
 #define CMD_TIBIN	LIBPATH_TI"tibin"
 
+#define LIBPATH_MDOS	LIBPATH"target-mdos/"
+#define INCPATH_MDOS	INCPATH"target-mdos/"
+#define CRT0_MDOS	LIBPATH_TI"crt0-mdos.o"
+#define CMD_MDOSBIN	LIBPATH_TI"mdosbin"
+
 #define CMD_AS		BINPATH"as9995"
 #define CMD_CC		LIBPATH"tms9995-cpp"
 #define CMD_CCOM	LIBPATH"tms9995-ccom"
@@ -111,6 +116,7 @@ int discardable;
 #define OS_NONE		0
 #define OS_FUZIX	1
 #define OS_TI994A	2
+#define OS_MDOS		3
 int fuzixsub;
 
 #define MAXARG	512
@@ -414,11 +420,17 @@ void link_phase(void)
 				break;
 			}
 			break;
-		case OS_TI994A:
+		case OS_MDOS:
 			/* Link at 0xA000 */
 			add_argument("-b");
 			add_argument("-C");
 			add_argument("40960");
+			break;
+		case OS_TI994A:
+			/* Link at 0x0400 but with a 6 byte header in the crt  */
+			add_argument("-b");
+			add_argument("-C");
+			add_argument("1018");
 			break;
 		case OS_NONE:
 		default:
@@ -464,6 +476,12 @@ void link_phase(void)
 	case OS_TI994A:
 		/* TI 99/4A */
 		build_arglist(CMD_TIBIN);
+		add_argument(target);
+		run_command();
+		break;
+	case OS_MDOS:
+		/* MDOS */
+		build_arglist(CMD_MDOSBIN);
 		add_argument(target);
 		run_command();
 		break;
@@ -756,6 +774,9 @@ int main(int argc, char *argv[])
 			if (strcmp(*p + 2, "ti994a") == 0) {
 				targetos = OS_TI994A;
 				cpu = 9900;
+			} else if (strcmp(*p + 2, "mdos") == 0) {
+				targetos = OS_MDOS;
+				cpu = 9995;
 			} else if (strcmp(*p + 2, "fuzix") == 0) {
 				targetos = OS_FUZIX;
 				fuzixsub = 0;
@@ -766,7 +787,7 @@ int main(int argc, char *argv[])
 				targetos = OS_FUZIX;
 				fuzixsub = 2;
 			} else {
-				fprintf(stderr, "cc: only fuzix and ti994a target types are known.\n");
+				fprintf(stderr, "cc: only fuzix. mdos and ti994a target types are known.\n");
 				fatal();
 			}
 			break;
@@ -779,6 +800,9 @@ int main(int argc, char *argv[])
 		switch (targetos) {
 		case OS_TI994A:
                        add_system_include(INCPATH_TI);
+			break;
+		case OS_MDOS:
+                       add_system_include(INCPATH_MDOS);
 			break;
 		case OS_FUZIX:
 			break;
