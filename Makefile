@@ -14,7 +14,7 @@ install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a tibin mdosbin
 	cp lib9995.a /opt/cc9995/lib
 	cp cc9995 /opt/cc9995/bin
 	cp tibin /opt/cc9995/lib/target-ti994a
-	cp mdosin /opt/cc9995/lib/target-mdos
+	cp mdosbin /opt/cc9995/lib/target-mdos
 
 cc9995: cc9995.c
 	gcc -Wall -pedantic -O2 cc9995.c -o cc9995
