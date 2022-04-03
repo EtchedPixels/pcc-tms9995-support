@@ -53,7 +53,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#undef DEBUG
+#define DEBUG
 
 #define BINPATH	"/opt/cc9995/bin/"
 #define LIBPATH	"/opt/cc9995/lib/"
@@ -420,13 +420,13 @@ void link_phase(void)
 				break;
 			}
 			break;
-		case OS_MDOS:
+		case OS_TI994A:
 			/* Link at 0xA000 */
 			add_argument("-b");
 			add_argument("-C");
 			add_argument("40960");
 			break;
-		case OS_TI994A:
+		case OS_MDOS:
 			/* Link at 0x0400 but with a 6 byte header in the crt  */
 			add_argument("-b");
 			add_argument("-C");

@@ -83,6 +83,11 @@ int main(int argc, char *argv[])
         perror(argv[1]);
         exit(1);
     }
+
+    if (left < start) {
+        fprintf(stderr, "%s: file too short.\n", argv[1]);
+        exit(1);
+    }
     
     left -= start;
 
