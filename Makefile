@@ -108,7 +108,35 @@ OBJ =	libc/memcpy.o \
 	libc/tfind.o \
 	libc/tolower.o \
 	libc/toupper.o \
-	libc/xitoa.c
+	libc/xitoa.o
+
+STDIO =	stdio/fclose.o \
+	stdio/fflush.o \
+	stdio/fgetc.o \
+	stdio/fgetpos.o \
+	stdio/fgets.o \
+	stdio/fopen.o \
+	stdio/fprintf.o \
+	stdio/fputc.o \
+	stdio/fputs.o \
+	stdio/fread.o \
+	stdio/fscanf.o \
+	stdio/fsetpos.o \
+	stdio/ftell.o \
+	stdio/fwrite.o \
+	stdio/gets.o \
+	stdio/getw.o \
+	stdio/printf.o \
+	stdio/putchar.o \
+	stdio/putw.o \
+	stdio/sprintf.o \
+	stdio/sscanf.o \
+	stdio/stdio0.o \
+	stdio/vfprintf.o \
+	stdio/vfscanf.o \
+	stdio/vprintf.o \
+	stdio/vscanf.o \
+	stdio/vsscanf.c
 
 # Members for the support library
 SOBJ =  support9995/add32i.o \
@@ -135,12 +163,13 @@ SOBJ =  support9995/add32i.o \
 TOBJ = 	ti994a/console.o \
 	ti994a/getch.o \
 	ti994a/getjs.o \
-	ti994a/printat.o
+	ti994a/printat.o \
+	ti994a/glue.o
 
 include literals
 
-libc.a:	cc9995 $(OBJ)
-	ar rc libc.a $(OBJ) $(AOBJ)
+libc.a:	cc9995 $(STDIO) $(OBJ)
+	ar rc libc.a $(STDIO) $(OBJ) $(AOBJ)
 
 lib9995.a: cc9995 $(SOBJ) $(LOBJ)
 	ar rc lib9995.a $(SOBJ) $(LOBJ)

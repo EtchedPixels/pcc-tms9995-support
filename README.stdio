@@ -1,0 +1,55 @@
+The standard I/O package included here requires the target implements a low
+level I/O package to map the classic unix I/O onto the target.
+
+A minimum implementation is something like the below - setting errno is also
+helpful.
+
+
+int open(char *n, int mode, int perms)
+{
+	return -1;
+}
+
+int close(int n)
+{
+	return -1;
+}
+
+int read(int fd, void *buf, int len)
+{
+	switch(fd) {
+	case 0:	/* stdin */
+		/* Platform specific keyboard read */
+		break;
+	default:
+		return -1;
+	}
+}
+
+int write(int fd, const void *buf, int len)
+{
+	switch(fd) {
+	case 1:	/* stdout */
+	case 2:	/* stderr */
+		/* Platform console output */
+		break;
+	default:
+		return -1;
+	}
+}
+
+int rename(const char *a, const char *b)
+{
+	return -1;
+}
+
+int remove(const char *a)
+{
+	return -1;
+}
+
+int lseek(int fd, off_t pos, int mode)
+{
+	return -1;
+}
+

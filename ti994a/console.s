@@ -1,11 +1,11 @@
 ;
 ;	Simple dumb video console for 32 character wide mode
 ;
-		.export _putchar
+		.export __putchar
 
 		.code
 
-_putchar:
+__putchar:
 	cb	r4,@__litb_10
 	jeq	@putnl
 	cb	r4,@__litb_13
