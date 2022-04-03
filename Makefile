@@ -6,6 +6,7 @@ install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a \
 	mkdir -p /opt/cc9995/lib
 	mkdir -p /opt/cc9995/bin
 	mkdir -p /opt/cc9995/include
+	mkdir -p /opt/cc9995/include/sys
 	mkdir -p /opt/cc9995/lib/target-ti994a
 	mkdir -p /opt/cc9995/include/target-ti994a
 	mkdir -p /opt/cc9995/lib/target-mdos
@@ -14,6 +15,8 @@ install: cc9995 crt0.o crt0-ti994a.o crt0-mdos.o libc.a lib9995.a \
 	cp crt0-ti994a.o /opt/cc9995/lib/target-ti994a
 	cp libti994a.a /opt/cc9995/lib/target-ti994a
 	cp libc.a /opt/cc9995/lib
+	cp include/*.h /opt/cc9995/include
+	cp include/sys/*.h /opt/cc9995/include/sys
 	cp lib9995.a /opt/cc9995/lib
 	cp cc9995 /opt/cc9995/bin
 	cp tibin /opt/cc9995/lib/target-ti994a
@@ -35,7 +38,77 @@ makelitb: makelitb.c
 # Members for the C library
 OBJ =	libc/memcpy.o \
 	libc/memset.o \
-	libc/strlen.o
+	libc/strlen.o \
+	libc/abort.o \
+	libc/abs.o \
+	libc/atoi.o \
+	libc/atol.o \
+	libc/bcmp.o \
+	libc/bcopy.o \
+	libc/bsearch.o \
+	libc/bzero.o \
+	libc/calloc.o \
+	libc/crypt.o \
+	libc/exit.o \
+	libc/free.o \
+	libc/getopt.o \
+	libc/index.o \
+	libc/isalnum.o \
+	libc/isalpha.o \
+	libc/isascii.o \
+	libc/isblank.o \
+	libc/iscntrl.o \
+	libc/isdigit.o \
+	libc/isgraph.o \
+	libc/islower.o \
+	libc/isprint.o \
+	libc/ispunct.o \
+	libc/isspace.o \
+	libc/isupper.o \
+	libc/isxdigit.o \
+	libc/libintl.o \
+	libc/lrand48.o \
+	libc/lsearch.o \
+	libc/ltoa.o \
+	libc/ltostr.o \
+	libc/malloc.o \
+	libc/memccpy.o \
+	libc/memcmp.o \
+	libc/memmove.o \
+	libc/qsort.o \
+	libc/realloc.o \
+	libc/rindex.o \
+	libc/strcasecmp.o \
+	libc/strcasestr.o \
+	libc/strcat.o \
+	libc/strchr.o \
+	libc/strcmp.o \
+	libc/strcoll.o \
+	libc/strcpy.o \
+	libc/strcspn.o \
+	libc/strdup.o \
+	libc/stricmp.o \
+	libc/strlcpy.o \
+	libc/strncasecmp.o \
+	libc/strncat.o \
+	libc/strncmp.o \
+	libc/strncpy.o \
+	libc/strnicmp.o \
+	libc/strnlen.o \
+	libc/strpbrk.o \
+	libc/strrchr.o \
+	libc/strsep.o \
+	libc/strspn.o \
+	libc/strstr.o \
+	libc/strtok.o \
+	libc/strtok_r.o \
+	libc/strtol.o \
+	libc/strxfrm.o \
+	libc/swab.o \
+	libc/tfind.o \
+	libc/tolower.o \
+	libc/toupper.o \
+	libc/xitoa.c
 
 # Members for the support library
 SOBJ =  support9995/add32i.o \
@@ -79,7 +152,7 @@ libti994a.a: cc9995 $(TOBJ)
 	as9995 $^
 
 %.o: %.c
-	cc9995 -c $^
+	./cc9995 -Iinclude -c $^
 
 clean:
 	rm -f $(OBJ) *~ cc9995 crt0.o lib9995.a libc.a
