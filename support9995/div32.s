@@ -59,6 +59,7 @@ div32op_2:
 	inc	r0
 div32op_3:
 	; capture the old high bit of the dividend into the working register
+	src	r7,1
 	andi	r7,1
 	a	r7,r1
 	; 32bit compare
@@ -125,8 +126,10 @@ divs32_2:
 divs32_3:
 	bl	@div32
 	srl	r5,1
-	jnc	@divs32_3
+	jnc	@divs32_4
 	; negate r0/r1
+	bl	@neg32
+divs32_4:
 	mov	*r13+,r5
 	mov	*r13+,r4
 	mov	*r13+,r11
