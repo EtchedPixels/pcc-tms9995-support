@@ -48,7 +48,7 @@ center:
 	dect	r13
 	mov	r12,*r13
 	mov	r13,r12
-	a	r1,*r13		; size (negative)	
+	a	r1,r13		; size (negative)
 	dect	r12
 	rt
 
