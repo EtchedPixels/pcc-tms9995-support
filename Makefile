@@ -136,7 +136,7 @@ STDIO =	stdio/fclose.o \
 	stdio/vfscanf.o \
 	stdio/vprintf.o \
 	stdio/vscanf.o \
-	stdio/vsscanf.c
+	stdio/vsscanf.o
 
 # Members for the support library
 SOBJ =  support9995/add32i.o \
